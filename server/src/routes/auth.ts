@@ -1,6 +1,8 @@
 import express from 'express';
 import { body, validationResult } from 'express-validator';
 import User from '../models/User';
+import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
 
 const router = express.Router();
 
@@ -35,14 +37,82 @@ router.post(
       });
     }
 
-    const newUser = await new User({
+    var salt = bcrypt.genSaltSync(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
+
+    const newUser = await User.create({
       email: email,
-      password: password,
+      password: hashedPassword,
     });
 
-    const savedUser = await newUser.save();
-    res.json({ message: 'Tutto va benne', savedUser });
+    const token = jwt.sign(
+      { email: newUser.email },
+      process.env.JWT_SECRET as string,
+      {
+        expiresIn: process.env.JWT_EXPIRES_IN,
+      }
+    );
+
+    //set expiry to 1 month
+    // let d = new Date();
+    // d.setDate(d.getDate() + 30);
+
+    // res.cookie('ciacho', token, {
+    //   expires: d,
+    //   httpOnly: true,
+    //   secure: req.secure || req.headers['x-forwarded-proto'] === 'https',
+    //   sameSite: 'none',
+    // });
+
+    // res.status(200).json({
+    //   status: 'success',
+    //   token,
+    //   data: { email: newUser.email },
+    // });
+
+    res.json({
+      errors: [],
+      data: { token, user: { id: newUser._id, email: newUser.email } },
+    });
   }
 );
+
+router.post('/login', async (req, res) => {
+  const { email, password } = req.body;
+
+  const user = await User.findOne({ email });
+  console.log(user);
+
+  if (!user) {
+    return res.json({
+      errors: [{ msg: 'invalid credentials' }],
+      data: null,
+    });
+  }
+
+  const match = await bcrypt.compare(password, user.password);
+
+  if (!match) {
+    return res.json({
+      errors: [{ msg: 'invalid credentials' }],
+      data: null,
+    });
+  }
+
+  // res.json({ user });
+
+  const token = jwt.sign(
+    { email: user.email },
+    process.env.JWT_SECRET as string,
+    {
+      expiresIn: process.env.JWT_EXPIRES_IN,
+    }
+  );
+
+  res.json({
+    errors: [],
+    data: { token, user: { id: user._id, email: user.email } },
+  });
+});
 
 export default router;
