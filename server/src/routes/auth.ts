@@ -52,10 +52,10 @@ router.post(
 
     const token = jwt.sign(
       { email: newUser.email },
-      process.env.JWT_SECRET as string
-      // {
-      //   expiresIn: process.env.JWT_EXPIRES_IN,
-      // }
+      process.env.JWT_SECRET as string,
+      {
+        expiresIn: 360000,
+      }
     );
 
     //set expiry to 1 month
@@ -98,7 +98,6 @@ router.post(
     const { email, password } = req.body;
 
     const user = await User.findOne({ email });
-    console.log(user);
 
     if (!user) {
       return res.json({
@@ -122,7 +121,7 @@ router.post(
       { email: user.email },
       process.env.JWT_SECRET as string,
       {
-        expiresIn: process.env.JWT_EXPIRES_IN,
+        expiresIn: 360000,
       }
     );
 

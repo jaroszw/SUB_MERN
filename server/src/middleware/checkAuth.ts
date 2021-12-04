@@ -31,6 +31,7 @@ export const checkAuth = async (
       errors: [
         {
           msg: 'unauthorized',
+          error: error,
         },
       ],
     });
