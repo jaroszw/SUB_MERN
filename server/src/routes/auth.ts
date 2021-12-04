@@ -1,6 +1,6 @@
 import express from 'express';
 import { body, validationResult } from 'express-validator';
-import User from '../models/User';
+import User from '../models/user';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 
@@ -10,10 +10,10 @@ router.post(
   '/signup',
 
   //password and email validation
-  body('email').isEmail().withMessage('Must be en email'),
+  body('email').isEmail().withMessage('Email field must be a valid email'),
   body('password')
     .isLength({ min: 5 })
-    .withMessage('must be at least 5 chars long'),
+    .withMessage('Must be at least 5 chars long'),
 
   //proper request handler
   async (req: express.Request, res: express.Response) => {
@@ -22,7 +22,7 @@ router.post(
     const validationErrors = validationResult(req);
     if (!validationErrors.isEmpty()) {
       const errors = validationErrors.array().map((error) => {
-        return { [error.param]: error.msg };
+        return { msg: error.msg };
       });
 
       return res.json({ errors, data: null });
@@ -77,42 +77,55 @@ router.post(
   }
 );
 
-router.post('/login', async (req, res) => {
-  const { email, password } = req.body;
+router.post(
+  '/login',
+  body('email').isEmail().withMessage('Email field must be a valid email'),
+  async (req: express.Request, res: express.Response) => {
+    const validationErrors = validationResult(req);
+    if (!validationErrors.isEmpty()) {
+      const errors = validationErrors.array().map((error) => {
+        return { msg: error.msg };
+      });
 
-  const user = await User.findOne({ email });
-  console.log(user);
-
-  if (!user) {
-    return res.json({
-      errors: [{ msg: 'invalid credentials' }],
-      data: null,
-    });
-  }
-
-  const match = await bcrypt.compare(password, user.password);
-
-  if (!match) {
-    return res.json({
-      errors: [{ msg: 'invalid credentials' }],
-      data: null,
-    });
-  }
-
-  // res.json({ user });
-
-  const token = jwt.sign(
-    { email: user.email },
-    process.env.JWT_SECRET as string,
-    {
-      expiresIn: process.env.JWT_EXPIRES_IN,
+      return res.json({ errors, data: null });
     }
-  );
 
-  res.json({
-    errors: [],
-    data: { token, user: { id: user._id, email: user.email } },
-  });
-});
+    const { email, password } = req.body;
+
+    const user = await User.findOne({ email });
+    console.log(user);
+
+    if (!user) {
+      return res.json({
+        errors: [{ msg: 'Invalid credentials' }],
+        data: null,
+      });
+    }
+
+    const match = await bcrypt.compare(password, user.password);
+
+    if (!match) {
+      return res.json({
+        errors: [{ msg: 'Invalid credentials' }],
+        data: null,
+      });
+    }
+
+    // res.json({ user });
+
+    const token = jwt.sign(
+      { email: user.email },
+      process.env.JWT_SECRET as string,
+      {
+        expiresIn: process.env.JWT_EXPIRES_IN,
+      }
+    );
+
+    res.json({
+      errors: [],
+      data: { token, user: { id: user._id, email: user.email } },
+    });
+  }
+);
 
 export default router;
