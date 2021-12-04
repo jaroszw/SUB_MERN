@@ -3,6 +3,11 @@ import { body, validationResult } from 'express-validator';
 import User from '../models/user';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
+import { checkAuth } from '../middleware/checkAuth';
+
+export interface IGetUserAuthInfoRequest extends Request {
+  user: string; // or any other type
+}
 
 const router = express.Router();
 
@@ -47,10 +52,10 @@ router.post(
 
     const token = jwt.sign(
       { email: newUser.email },
-      process.env.JWT_SECRET as string,
-      {
-        expiresIn: process.env.JWT_EXPIRES_IN,
-      }
+      process.env.JWT_SECRET as string
+      // {
+      //   expiresIn: process.env.JWT_EXPIRES_IN,
+      // }
     );
 
     //set expiry to 1 month
@@ -128,4 +133,17 @@ router.post(
   }
 );
 
+router.get('/me', checkAuth, async (req, res) => {
+  const user = await User.findOne({ email: req.user });
+  return res.json({
+    errors: [],
+    data: {
+      user: {
+        id: user._id,
+        email: user.email,
+        stripeCustomerId: user.stripeCustomerId,
+      },
+    },
+  });
+});
 export default router;
