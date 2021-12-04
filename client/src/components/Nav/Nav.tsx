@@ -12,7 +12,6 @@ const LeftNavContainer = styled.div`
 const Nav = () => {
   const [state, setState] = useContext(UserContext);
   const navigate = useNavigate();
-  console.log('NAV', state);
 
   const handleLogout = () => {
     setState({ data: null, loading: false, error: '' });

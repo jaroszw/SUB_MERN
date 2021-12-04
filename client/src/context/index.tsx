@@ -18,10 +18,12 @@ const UserProvider = ({ children }: any) => {
     error: null,
   });
 
-  console.log('CONTEXT IS RENDERING');
+  const token = localStorage.getItem('token');
 
+  console.log('SETTING STATE FROM CONTEXT NO USE EFFECT');
   useEffect(() => {
     if (token) {
+      console.log('SETTING STATE FROM CONTEXT');
       fetchUser();
     } else {
       setUser({
@@ -30,9 +32,7 @@ const UserProvider = ({ children }: any) => {
         error: null,
       });
     }
-  }, []);
-
-  const token = localStorage.getItem('token');
+  }, [token]);
 
   if (token) {
     axios.defaults.headers.common['authorization'] = `Bearer ${token}`;
