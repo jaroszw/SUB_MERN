@@ -6,6 +6,7 @@ import LandingPage from './pages/LandingPage';
 // import { UserContext } from './context/index';
 import Articles from './pages/Articles';
 import { ProtectedRoute } from './routes/ProtectedRoute';
+import ArticlesPlans from './pages/ArticlesPlan';
 
 function App() {
   // const [state, setState] = useContext(UserContext);
@@ -17,6 +18,10 @@ function App() {
 
         <Route path="/articles" element={<ProtectedRoute />}>
           <Route path="/articles" element={<Articles />} />
+        </Route>
+
+        <Route path="/articles-plans" element={<ProtectedRoute />}>
+          <Route path="/articles-plans" element={<ArticlesPlans />} />
         </Route>
       </Routes>
     </Router>

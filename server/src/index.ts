@@ -1,5 +1,6 @@
 import express, { urlencoded } from 'express';
 import authRoutes from './routes/auth';
+import subsRoutes from './routes/subs';
 import cors from 'cors';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
@@ -15,6 +16,7 @@ app.use(
 );
 
 app.use('/auth', authRoutes);
+app.use('/subs', subsRoutes);
 
 const PORT = process.env.PORT;
 const MONGO_URL = process.env.MONGODB_URI;
