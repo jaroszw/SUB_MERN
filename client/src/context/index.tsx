@@ -20,22 +20,20 @@ const UserProvider = ({ children }: any) => {
 
   const token = localStorage.getItem('token');
 
-  console.log('SETTING STATE FROM CONTEXT NO USE EFFECT');
   useEffect(() => {
     if (token) {
-      console.log('SETTING STATE FROM CONTEXT');
       fetchUser();
     } else {
       setUser({
         data: null,
-        loading: true,
+        loading: false,
         error: null,
       });
     }
   }, [token]);
 
   if (token) {
-    axios.defaults.headers.common['authorization'] = `Bearer ${token}`;
+    axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
   }
 
   const fetchUser = async () => {
