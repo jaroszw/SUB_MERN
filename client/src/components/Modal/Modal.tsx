@@ -3,7 +3,7 @@ import { Modal, Button, InputGroup, FormControl } from 'react-bootstrap';
 import axios from 'axios';
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
-import { UserContext } from '../../context';
+import { UserContext } from '../../context/context';
 
 interface ModalProps {
   text: String;
@@ -53,11 +53,13 @@ function ModalComponent({ text, variant, isSignupFlow }: ModalProps) {
       return setErrorMsg(data.errors[0].msg);
     }
 
-    console.log(data);
+    console.log('SETTING USER IN LOGIN');
+
     setState({
       data: {
         id: data.data.user.id,
         email: data.data.user.email,
+        customerStripeId: data.data.user.customerStripeId,
       },
       loading: false,
       error: null,
@@ -67,6 +69,7 @@ function ModalComponent({ text, variant, isSignupFlow }: ModalProps) {
     // axios.defaults.headers.common[
     //   'Authorization'
     // ] = `Bearer ${data.data.token}`;
+
     navigate('/articles');
   };
 

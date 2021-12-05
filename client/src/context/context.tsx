@@ -2,19 +2,19 @@ import React, { createContext, useEffect, useState } from 'react';
 import axios from 'axios';
 
 interface User {
-  data: { id: string; email: string } | null;
+  data: { id: string; email: string; customerStripeId: string } | null;
   error: string | null;
   loading: boolean;
 }
 
 const UserContext = createContext<
   [User, React.Dispatch<React.SetStateAction<User>>]
->([{ data: null, loading: true, error: null }, () => {}]);
+>([{ data: null, loading: false, error: null }, () => {}]);
 
 const UserProvider = ({ children }: any) => {
   const [user, setUser] = useState<User>({
     data: null,
-    loading: true,
+    loading: false,
     error: null,
   });
 
@@ -22,27 +22,28 @@ const UserProvider = ({ children }: any) => {
 
   useEffect(() => {
     if (token) {
+      console.log('FETCHING USER AGAIN');
       fetchUser();
     } else {
+      console.log('NULL');
       setUser({
         data: null,
         loading: false,
         error: null,
       });
     }
-  }, [token]);
-
-  if (token) {
-    axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-  }
+  }, []);
 
   const fetchUser = async () => {
+    setUser({ ...user, loading: true });
+
     const { data: response } = await axios.get('http://localhost:8080/auth/me');
     if (response?.data?.user) {
       setUser({
         data: {
           id: response.data.user.id,
           email: response.data.user.email,
+          customerStripeId: response.data.user.customerStripeId,
         },
         loading: false,
         error: null,
@@ -55,6 +56,10 @@ const UserProvider = ({ children }: any) => {
       });
     }
   };
+
+  if (token) {
+    axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+  }
 
   return (
     <UserContext.Provider value={[user, setUser]}>

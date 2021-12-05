@@ -4,6 +4,7 @@ import User from '../models/user';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { checkAuth } from '../middleware/checkAuth';
+import { stripe } from '../utils/stripe';
 
 export interface IGetUserAuthInfoRequest extends Request {
   user: string; // or any other type
@@ -45,10 +46,19 @@ router.post(
     var salt = bcrypt.genSaltSync(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
+    const customer = await stripe.customers.create(
+      {
+        email,
+      },
+      { apiKey: process.env.STRIPE_SECRET_KEY as string }
+    );
+
     const newUser = await User.create({
       email: email,
       password: hashedPassword,
+      customerStripeId: customer.id,
     });
+    console.log(newUser);
 
     const token = jwt.sign(
       { email: newUser.email },
@@ -77,7 +87,14 @@ router.post(
 
     res.json({
       errors: [],
-      data: { token, user: { id: newUser._id, email: newUser.email } },
+      data: {
+        token,
+        user: {
+          id: newUser._id,
+          email: newUser.email,
+          customerStripeId: newUser.customerStripeId,
+        },
+      },
     });
   }
 );
@@ -127,20 +144,28 @@ router.post(
 
     res.json({
       errors: [],
-      data: { token, user: { id: user._id, email: user.email } },
+      data: {
+        token,
+        user: {
+          id: user._id,
+          email: user.email,
+          customerStripeId: user.customerStripeId,
+        },
+      },
     });
   }
 );
 
 router.get('/me', checkAuth, async (req, res) => {
   const user = await User.findOne({ email: req.user });
+
   return res.json({
     errors: [],
     data: {
       user: {
         id: user._id,
         email: user.email,
-        stripeCustomerId: user.stripeCustomerId,
+        customerStripeId: user.customerStripeId,
       },
     },
   });

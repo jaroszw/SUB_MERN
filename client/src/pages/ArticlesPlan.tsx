@@ -44,12 +44,17 @@ const ArticlesPlans = () => {
 
   const fetchprices = async () => {
     const response = await axios.get('http://localhost:8080/subs/prices');
-    console.log(response.data.data);
     setPrices(response.data.data);
   };
 
   const createSession = async (priceId: string) => {
-    console.log(priceId);
+    const { data: response } = await axios.post(
+      'http://localhost:8080/subs/session',
+      {
+        priceId,
+      }
+    );
+    window.location.href = response.url;
   };
 
   const backgroundColors: any = {
@@ -64,6 +69,7 @@ const ArticlesPlans = () => {
         {prices.map((price: any) => {
           return (
             <Card
+              key={price.id}
               style={{ width: '18rem', height: '25rem', marginRight: '2rem' }}
             >
               <CardHeader

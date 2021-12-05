@@ -16,4 +16,27 @@ router.get(
   }
 );
 
+router.post('/session', checkAuth, async (req, res) => {
+  const { customerStripeId } = await User.findOne({ email: req.user });
+  console.log(customerStripeId);
+
+  const session = await stripe.checkout.sessions.create(
+    {
+      mode: 'subscription',
+      payment_method_types: ['card'],
+      line_items: [{ price: req.body.priceId, quantity: 1 }],
+      success_url: 'http://localhost:3000/articles',
+      cancel_url: 'http://localhost:3000/articles-plans',
+      customer: customerStripeId,
+    },
+    {
+      apiKey: process.env.STRIPE_SECRET_KEY,
+    }
+  );
+
+  // apiKey: process.env.STRIPE_SECRET_KEY,
+  // );
+  return res.json(session);
+});
+
 export default router;

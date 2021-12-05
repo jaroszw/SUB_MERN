@@ -1,13 +1,12 @@
 import React, { useContext } from 'react';
 import { Outlet, Navigate } from 'react-router-dom';
-import { UserContext } from '../context';
+import { UserContext } from '../context/context';
 
 export const ProtectedRoute = () => {
   const [state] = useContext(UserContext);
-  console.log(state);
 
   if (state.loading) {
-    return <div>Spinner</div>;
+    return <h1>Spinner</h1>;
   }
 
   return state.data ? <Outlet /> : <Navigate to="/" />;
