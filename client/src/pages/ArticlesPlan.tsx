@@ -1,8 +1,8 @@
-import axios from 'axios';
-import { useEffect, useState } from 'react';
-import { Container } from 'react-bootstrap';
-import styled from 'styled-components';
-import { Card, Button } from 'react-bootstrap';
+import axios from "axios";
+import { useEffect, useState } from "react";
+import { Container } from "react-bootstrap";
+import styled from "styled-components";
+import { Card, Button } from "react-bootstrap";
 
 const CardsContainer = styled.div`
   display: flex;
@@ -43,13 +43,14 @@ const ArticlesPlans = () => {
   }, []);
 
   const fetchprices = async () => {
-    const response = await axios.get('http://localhost:8080/subs/prices');
+    const response = await axios.get("http://localhost:8080/subs/prices");
     setPrices(response.data.data);
+    console.log(response);
   };
 
   const createSession = async (priceId: string) => {
     const { data: response } = await axios.post(
-      'http://localhost:8080/subs/session',
+      "http://localhost:8080/subs/session",
       {
         priceId,
       }
@@ -58,9 +59,9 @@ const ArticlesPlans = () => {
   };
 
   const backgroundColors: any = {
-    Basic: 'rgb(104, 219, 104)',
-    Standard: 'rgb(185, 42, 23, 0.835)',
-    Premium: 'pink',
+    Basic: "rgb(104, 219, 104)",
+    Standard: "rgb(185, 42, 23, 0.835)",
+    Premium: "pink",
   };
 
   return (
@@ -70,7 +71,7 @@ const ArticlesPlans = () => {
           return (
             <Card
               key={price.id}
-              style={{ width: '18rem', height: '25rem', marginRight: '2rem' }}
+              style={{ width: "18rem", height: "25rem", marginRight: "2rem" }}
             >
               <CardHeader
                 style={{ backgroundColor: backgroundColors[price.nickname] }}
@@ -80,7 +81,7 @@ const ArticlesPlans = () => {
                 </PriceCircle>
               </CardHeader>
               <Card.Body>
-                <Card.Title style={{ fontSize: '2rem' }}>
+                <Card.Title style={{ fontSize: "2rem" }}>
                   {price.nickname}
                 </Card.Title>
                 <Button

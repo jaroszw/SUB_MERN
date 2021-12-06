@@ -1,8 +1,8 @@
-import React, { createContext, useEffect, useState } from 'react';
-import axios from 'axios';
+import React, { createContext, useEffect, useState } from "react";
+import axios from "axios";
 
 interface User {
-  data: { id: string; email: string; customerStripeId: string } | null;
+  data: { id: string; email: string; stripeCustomerId: string } | null;
   error: string | null;
   loading: boolean;
 }
@@ -18,14 +18,14 @@ const UserProvider = ({ children }: any) => {
     error: null,
   });
 
-  const token = localStorage.getItem('token');
+  const token = localStorage.getItem("token");
 
   useEffect(() => {
     if (token) {
-      console.log('FETCHING USER AGAIN');
+      console.log("FETCHING USER AGAIN");
       fetchUser();
     } else {
-      console.log('NULL');
+      console.log("NULL");
       setUser({
         data: null,
         loading: false,
@@ -37,13 +37,13 @@ const UserProvider = ({ children }: any) => {
   const fetchUser = async () => {
     setUser({ ...user, loading: true });
 
-    const { data: response } = await axios.get('http://localhost:8080/auth/me');
+    const { data: response } = await axios.get("http://localhost:8080/auth/me");
     if (response?.data?.user) {
       setUser({
         data: {
           id: response.data.user.id,
           email: response.data.user.email,
-          customerStripeId: response.data.user.customerStripeId,
+          stripeCustomerId: response.data.user.stripeCustomerId,
         },
         loading: false,
         error: null,
@@ -58,7 +58,7 @@ const UserProvider = ({ children }: any) => {
   };
 
   if (token) {
-    axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+    axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
   }
 
   return (

@@ -1,13 +1,13 @@
-import { useState, useContext } from 'react';
-import { Modal, Button, InputGroup, FormControl } from 'react-bootstrap';
-import axios from 'axios';
-import styled from 'styled-components';
-import { useNavigate } from 'react-router-dom';
-import { UserContext } from '../../context/context';
+import { useState, useContext } from "react";
+import { Modal, Button, InputGroup, FormControl } from "react-bootstrap";
+import axios from "axios";
+import styled from "styled-components";
+import { useNavigate } from "react-router-dom";
+import { UserContext } from "../../context/context";
 
 interface ModalProps {
   text: String;
-  variant: 'primary' | 'danger' | 'secondary';
+  variant: "primary" | "danger" | "secondary";
   isSignupFlow: boolean;
 }
 
@@ -18,9 +18,9 @@ const ErrorMessage = styled.p`
 
 function ModalComponent({ text, variant, isSignupFlow }: ModalProps) {
   const [show, setShow] = useState(false);
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [errorMsg, setErrorMsg] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [errorMsg, setErrorMsg] = useState("");
   const [state, setState] = useContext(UserContext);
 
   const handleClose = () => setShow(false);
@@ -38,6 +38,7 @@ function ModalComponent({ text, variant, isSignupFlow }: ModalProps) {
         }
       );
       data = signUpData;
+      console.log(data);
     } else {
       const { data: loginData } = await axios.post(
         `http://localhost:8080/auth/login`,
@@ -47,30 +48,31 @@ function ModalComponent({ text, variant, isSignupFlow }: ModalProps) {
         }
       );
       data = loginData;
+      console.log(data);
     }
 
     if (data.errors?.length) {
       return setErrorMsg(data.errors[0].msg);
     }
 
-    console.log('SETTING USER IN LOGIN');
+    console.log("SETTING USER IN LOGIN");
 
     setState({
       data: {
         id: data.data.user.id,
         email: data.data.user.email,
-        customerStripeId: data.data.user.customerStripeId,
+        stripeCustomerId: data.data.user.stripeCustomerId,
       },
       loading: false,
       error: null,
     });
 
-    localStorage.setItem('token', data.data.token);
+    localStorage.setItem("token", data.data.token);
     // axios.defaults.headers.common[
     //   'Authorization'
     // ] = `Bearer ${data.data.token}`;
 
-    navigate('/articles');
+    navigate("/articles");
   };
 
   return (
@@ -80,10 +82,10 @@ function ModalComponent({ text, variant, isSignupFlow }: ModalProps) {
         onClick={handleShow}
         size="lg"
         style={{
-          marginRight: '1rem',
-          padding: '0.3rem 4rem',
-          fontSize: '1rem',
-          fontWeight: '500',
+          marginRight: "1rem",
+          padding: "0.3rem 4rem",
+          fontSize: "1rem",
+          fontWeight: "500",
         }}
       >
         {text}

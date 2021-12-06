@@ -1,10 +1,10 @@
-import React from 'react';
-import { Navbar, NavItem, NavLink } from 'react-bootstrap';
-import { Link, useNavigate } from 'react-router-dom';
+import React from "react";
+import { Navbar, NavItem, NavLink } from "react-bootstrap";
+import { Link, useNavigate } from "react-router-dom";
 
-import { useContext } from 'react';
-import { UserContext } from '../../context/context';
-import styled from 'styled-components';
+import { useContext } from "react";
+import { UserContext } from "../../context/context";
+import styled from "styled-components";
 
 const LeftNavContainer = styled.div`
   margin-left: auto;
@@ -15,9 +15,9 @@ const Nav = () => {
   const navigate = useNavigate();
 
   const handleLogout = () => {
-    setState({ data: null, loading: false, error: '' });
-    localStorage.removeItem('token');
-    navigate('/');
+    setState({ data: null, loading: false, error: "" });
+    localStorage.removeItem("token");
+    navigate("/");
   };
 
   return (
@@ -36,6 +36,11 @@ const Nav = () => {
             <NavItem>
               <Link to="/articles-plans" className="nav-link">
                 Planes
+              </Link>
+            </NavItem>
+            <NavItem>
+              <Link to="/articles" className="nav-link">
+                Articles
               </Link>
             </NavItem>
           </React.Fragment>

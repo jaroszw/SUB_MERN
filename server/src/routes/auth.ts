@@ -1,10 +1,10 @@
-import express from 'express';
-import { body, validationResult } from 'express-validator';
-import User from '../models/user';
-import bcrypt from 'bcryptjs';
-import jwt from 'jsonwebtoken';
-import { checkAuth } from '../middleware/checkAuth';
-import { stripe } from '../utils/stripe';
+import express from "express";
+import { body, validationResult } from "express-validator";
+import User from "../models/user";
+import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
+import { checkAuth } from "../middleware/checkAuth";
+import { stripe } from "../utils/stripe";
 
 export interface IGetUserAuthInfoRequest extends Request {
   user: string; // or any other type
@@ -13,13 +13,13 @@ export interface IGetUserAuthInfoRequest extends Request {
 const router = express.Router();
 
 router.post(
-  '/signup',
+  "/signup",
 
   //password and email validation
-  body('email').isEmail().withMessage('Email field must be a valid email'),
-  body('password')
+  body("email").isEmail().withMessage("Email field must be a valid email"),
+  body("password")
     .isLength({ min: 5 })
-    .withMessage('Must be at least 5 chars long'),
+    .withMessage("Must be at least 5 chars long"),
 
   //proper request handler
   async (req: express.Request, res: express.Response) => {
@@ -38,7 +38,7 @@ router.post(
 
     if (isUser) {
       return res.json({
-        errors: [{ msg: 'Email already in use' }],
+        errors: [{ msg: "Email already in use" }],
         data: null,
       });
     }
@@ -56,9 +56,8 @@ router.post(
     const newUser = await User.create({
       email: email,
       password: hashedPassword,
-      customerStripeId: customer.id,
+      stripeCustomerId: customer.id,
     });
-    console.log(newUser);
 
     const token = jwt.sign(
       { email: newUser.email },
@@ -92,7 +91,7 @@ router.post(
         user: {
           id: newUser._id,
           email: newUser.email,
-          customerStripeId: newUser.customerStripeId,
+          stripeCustomerId: newUser.stripeCustomerId,
         },
       },
     });
@@ -100,8 +99,8 @@ router.post(
 );
 
 router.post(
-  '/login',
-  body('email').isEmail().withMessage('Email field must be a valid email'),
+  "/login",
+  body("email").isEmail().withMessage("Email field must be a valid email"),
   async (req: express.Request, res: express.Response) => {
     const validationErrors = validationResult(req);
     if (!validationErrors.isEmpty()) {
@@ -118,7 +117,7 @@ router.post(
 
     if (!user) {
       return res.json({
-        errors: [{ msg: 'Invalid credentials' }],
+        errors: [{ msg: "Invalid credentials" }],
         data: null,
       });
     }
@@ -127,7 +126,7 @@ router.post(
 
     if (!match) {
       return res.json({
-        errors: [{ msg: 'Invalid credentials' }],
+        errors: [{ msg: "Invalid credentials" }],
         data: null,
       });
     }
@@ -149,14 +148,14 @@ router.post(
         user: {
           id: user._id,
           email: user.email,
-          customerStripeId: user.customerStripeId,
+          stripeCustomerId: user.stripeCustomerId,
         },
       },
     });
   }
 );
 
-router.get('/me', checkAuth, async (req, res) => {
+router.get("/me", checkAuth, async (req, res) => {
   const user = await User.findOne({ email: req.user });
 
   return res.json({
@@ -165,7 +164,7 @@ router.get('/me', checkAuth, async (req, res) => {
       user: {
         id: user._id,
         email: user.email,
-        customerStripeId: user.customerStripeId,
+        stripeCustomerId: user.stripeCustomerId,
       },
     },
   });
