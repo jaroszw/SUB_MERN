@@ -59,17 +59,22 @@ const Content = styled.p``;
 
 const Articles = () => {
   const [articles, setArticles] = useState<Article[]>([]);
+  const [isFetching, setIsFetching] = useState(false);
 
   useEffect(() => {
     fetchArticles();
   }, []);
 
   const fetchArticles = async () => {
+    setIsFetching(true);
     const { data: response } = await axios.get(
       "http://localhost:8080/art/articles"
     );
+    setIsFetching(false);
     setArticles(response);
   };
+
+  if (isFetching) return <h1>Loading Articles</h1>;
 
   return (
     <>
@@ -86,7 +91,7 @@ const Articles = () => {
       ) : (
         <NoArticlesContainer>
           <ErrorHeader>You don't have access yet</ErrorHeader>
-          <Link to="/article-plans">Buy a plan</Link>
+          <Link to="/articles-plans">Buy a plan</Link>
         </NoArticlesContainer>
       )}
     </>

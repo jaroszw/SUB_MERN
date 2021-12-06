@@ -22,10 +22,8 @@ const UserProvider = ({ children }: any) => {
 
   useEffect(() => {
     if (token) {
-      console.log("FETCHING USER AGAIN");
       fetchUser();
     } else {
-      console.log("NULL");
       setUser({
         data: null,
         loading: false,

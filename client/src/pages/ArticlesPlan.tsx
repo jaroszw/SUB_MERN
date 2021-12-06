@@ -45,7 +45,6 @@ const ArticlesPlans = () => {
   const fetchprices = async () => {
     const response = await axios.get("http://localhost:8080/subs/prices");
     setPrices(response.data.data);
-    console.log(response);
   };
 
   const createSession = async (priceId: string) => {

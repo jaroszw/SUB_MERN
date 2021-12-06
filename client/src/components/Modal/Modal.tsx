@@ -38,7 +38,6 @@ function ModalComponent({ text, variant, isSignupFlow }: ModalProps) {
         }
       );
       data = signUpData;
-      console.log(data);
     } else {
       const { data: loginData } = await axios.post(
         `http://localhost:8080/auth/login`,
@@ -48,14 +47,11 @@ function ModalComponent({ text, variant, isSignupFlow }: ModalProps) {
         }
       );
       data = loginData;
-      console.log(data);
     }
 
     if (data.errors?.length) {
       return setErrorMsg(data.errors[0].msg);
     }
-
-    console.log("SETTING USER IN LOGIN");
 
     setState({
       data: {
@@ -68,9 +64,9 @@ function ModalComponent({ text, variant, isSignupFlow }: ModalProps) {
     });
 
     localStorage.setItem("token", data.data.token);
-    // axios.defaults.headers.common[
-    //   'Authorization'
-    // ] = `Bearer ${data.data.token}`;
+    axios.defaults.headers.common[
+      "Authorization"
+    ] = `Bearer ${data.data.token}`;
 
     navigate("/articles");
   };
